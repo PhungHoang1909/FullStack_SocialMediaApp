@@ -1,0 +1,2 @@
+Run:
+type in terminal: npm run dev
