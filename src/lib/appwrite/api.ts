@@ -1,7 +1,9 @@
-import { ID } from "appwrite";
+import { Databases, ID } from "appwrite";
 
 import { INewUser } from "@/types";
 import { account, appwriteConfig, avatars, database } from "./config";
+import { syncBuiltinESMExports } from "module";
+import { Query } from "@tanstack/react-query";
 
 export async function createUserAccount(user: INewUser) {
     try {
@@ -47,6 +49,37 @@ export async function saveUserToDB(user: {
         )
 
         return newUser;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function SignInAccount(user: { email: string; password: string;}) {
+    try {
+        const session = await account.createEmailSession(user.email, user.password);
+
+        return session;
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
+
+export async function getCurrentUser(params:type) {
+    try {
+        const currentAccount = await account.get();
+
+        if(!currentAccount) throw Error;
+
+        const currentUser = await database.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            [Query.equal( 'accountId', currentAccount.$id)]
+        )
+
+        if (!currentUser) throw Error;
+
+        return currentUser.documents[0];
     } catch (error) {
         console.log(error);
     }
