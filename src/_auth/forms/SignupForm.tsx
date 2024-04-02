@@ -1,7 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Link } from "react-router-dom"
+import { Toaster } from "@/components/ui/toaster"
 
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
 import { Button } from "@/components/ui/button"
@@ -10,9 +11,11 @@ import { SignupValidation } from "@/lib/validation"
 import { z } from "zod"
 import Loader from "@/components/shared/Loader"
 import { createUserAccount } from "@/lib/appwrite/api"
+import { useToast } from "@/components/ui/use-toast"
 
 
 function SignupForm() {
+  const { toast } = useToast
   const isLoading = false;
 
   // 1. Define your form.
@@ -31,8 +34,13 @@ function SignupForm() {
     // create a user
     const newUser = await createUserAccount(values);
 
-    console.log(newUser);
+    if(!newUser){
+      return toast({ title: 'Sign up failed. Please Try again.' })
+    }
+
+    //const session = await SignInAccount()
   }
+
   return (
     <Form {...form}>
       <div className="sm:w-420 flex-center flex-col">
